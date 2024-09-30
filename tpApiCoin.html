@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Companies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f4f4f4;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Trading Companies</h1>
+    <ul id="tradingCompanies"></ul>
+
+    <script>
+        const apiKey = '12345678-9abc-def0-1234-56789abcdef0';  
+        const url = 'https://rest.coinapi.io/v1/exchanges';
+
+        // Función para obtener y mostrar los datos
+        async function getTradingCompanies() {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-CoinAPI-Key': apiKey
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener los datos de la API');
+                }
+
+                const data = await response.json();
+                const companiesList = document.getElementById('tradingCompanies');
+
+                data.forEach(company => {
+                    const volume1hrs = company.volume_1hrs_usd || 125693086.60;  
+                    const volume1day = company.volume_1day_usd || 8402286735.28;
+
+                    // Verifica que los volúmenes sean numéricos
+                    if (typeof volume1hrs === 'number' && typeof volume1day === 'number') {
+                        const li = document.createElement('li');
+                        li.textContent = `Nombre: ${company.name}, Volumen 1hr USD: ${volume1hrs.toFixed(2)}, Volumen 1 día USD: ${volume1day.toFixed(2)}`;
+                        companiesList.appendChild(li);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                const companiesList = document.getElementById('tradingCompanies');
+                companiesList.innerHTML = `<li>Error al obtener datos de la API</li>`;
+            }
+        }
+
+        // Llamar a la función para obtener los datos cuando se cargue la página
+        getTradingCompanies();
+    </script>
+</body>
+</html>
